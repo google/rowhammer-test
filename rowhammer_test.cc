@@ -15,14 +15,14 @@ const int toggles = 540000;
 
 char *g_mem;
 
-void *pick_addr() {
+char *pick_addr() {
   size_t offset = (rand() << 12) % mem_size;
   return g_mem + offset;
 }
 
 void main_prog() {
-  g_mem = mmap(NULL, mem_size, PROT_READ | PROT_WRITE,
-               MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+  g_mem = (char *) mmap(NULL, mem_size, PROT_READ | PROT_WRITE,
+                        MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
   assert(g_mem != MAP_FAILED);
 
   printf("clear\n");
@@ -37,7 +37,7 @@ void main_prog() {
       uint32_t *addrs[addr_count];
       int a;
       for (a = 0; a < addr_count; a++)
-        addrs[a] = pick_addr();
+        addrs[a] = (uint32_t *) pick_addr();
 
       uint32_t sum = 0;
       int i;

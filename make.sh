@@ -2,4 +2,4 @@
 
 set -eu
 
-gcc -g -Wall -Werror -O2 rowhammer_test.c -o rowhammer_test
+g++ -g -Wall -Werror -O2 rowhammer_test.cc -o rowhammer_test
