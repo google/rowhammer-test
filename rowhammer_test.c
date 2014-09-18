@@ -15,7 +15,7 @@ const int toggles = 540000;
 
 char *g_mem;
 
-char *pick_addr() {
+void *pick_addr() {
   size_t offset = (rand() << 12) % mem_size;
   return g_mem + offset;
 }
@@ -33,15 +33,26 @@ void main_prog() {
     printf("toggle %i\n", iter++);
     int j;
     for (j = 0; j < 40; j++) {
-      char *addr1 = pick_addr();
-      char *addr2 = pick_addr();
-      /* printf("toggle %p %p\n", addr1, addr2); */
+      const int addr_count = 4;
+      uint32_t *addrs[addr_count];
+      int a;
+      for (a = 0; a < addr_count; a++)
+        addrs[a] = pick_addr();
+
+      uint32_t sum = 0;
       int i;
       for (i = 0; i < toggles; i++) {
-        asm volatile("movl (%0), %%eax" : : "r" (addr1) : "eax");
-        asm volatile("movl (%0), %%ebx" : : "r" (addr2) : "ebx");
-        asm volatile("clflush (%0)" : : "r" (addr1) : "memory");
-        asm volatile("clflush (%0)" : : "r" (addr2) : "memory");
+        for (a = 0; a < addr_count; a++)
+          sum += *addrs[a] + 1;
+        for (a = 0; a < addr_count; a++)
+          asm volatile("clflush (%0)" : : "r" (addrs[a]) : "memory");
+      }
+
+      /* Sanity check.  We don't expect this to fail, because reading
+         these rows refreshes them. */
+      if (sum != 0) {
+        printf("error: sum=%x\n", sum);
+        exit(1);
       }
     }
 
