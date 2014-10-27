@@ -90,9 +90,10 @@ void main_prog() {
   Timer t;
   int iter = 0;
   for (;;) {
-    printf("toggle %i\n", iter++);
+    printf("Iteration %i (after %.2fs)\n", iter++, t.get_diff());
     toggle(10, 8);
 
+    Timer check_timer;
     printf("check\n");
     uint64_t *end = (uint64_t *) (g_mem + mem_size);
     uint64_t *ptr;
@@ -101,10 +102,10 @@ void main_prog() {
       uint64_t got = *ptr;
       if (got != ~(uint64_t) 0) {
         printf("error at %p: got 0x%" PRIx64 "\n", ptr, got);
-        printf("after %.2fs\n", t.get_diff());
         errors++;
       }
     }
+    printf("  (check took %fs)\n", check_timer.get_diff());
     if (errors)
       exit(1);
   }
