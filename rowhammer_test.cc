@@ -104,6 +104,10 @@ void main_prog() {
 
 
 int main() {
+  // In case we are running as PID 1, we fork() a subprocess to run
+  // the test in.  Otherwise, if process 1 exits or crashes, this will
+  // cause a kernel panic (which can cause a reboot or just obscure
+  // log output and prevent console scrollback from working).
   int pid = fork();
   if (pid == 0) {
     main_prog();
