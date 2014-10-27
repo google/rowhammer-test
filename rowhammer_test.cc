@@ -61,8 +61,8 @@ static void toggle(int iterations, int addr_count) {
         asm volatile("clflush (%0)" : : "r" (addrs[a]) : "memory");
     }
 
-    /* Sanity check.  We don't expect this to fail, because reading
-       these rows refreshes them. */
+    // Sanity check.  We don't expect this to fail, because reading
+    // these rows refreshes them.
     if (sum != 0) {
       printf("error: sum=%x\n", sum);
       exit(1);
