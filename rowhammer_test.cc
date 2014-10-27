@@ -69,7 +69,6 @@ static void toggle(int iterations, int addr_count) {
     }
   }
   t.print_iters(iterations * addr_count * toggles);
-  // t.print_iters(iterations * toggles);
 }
 
 void main_prog() {
@@ -84,10 +83,6 @@ void main_prog() {
   int iter = 0;
   for (;;) {
     printf("toggle %i\n", iter++);
-    // for (int a = 2; a <= 64; a *= 2) {
-    //   printf("try %i addrs\n", a);
-    //   toggle(10, a);
-    // }
     toggle(10, 8);
 
     printf("check\n");
