@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/mman.h>
+#include <sys/time.h>
 #include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
@@ -22,20 +23,24 @@ char *pick_addr() {
 }
 
 class Timer {
-  struct timespec start_time_;
+  struct timeval start_time_;
 
  public:
   Timer() {
-    int rc = clock_gettime(CLOCK_MONOTONIC, &start_time_);
+    // Note that we use gettimeofday() (with microsecond resolution)
+    // rather than clock_gettime() (with nanosecond resolution) so
+    // that this works on Mac OS X, because OS X doesn't provide
+    // clock_gettime() and we don't really need nanosecond resolution.
+    int rc = gettimeofday(&start_time_, NULL);
     assert(rc == 0);
   }
 
   double get_diff() {
-    struct timespec end_time;
-    int rc = clock_gettime(CLOCK_MONOTONIC, &end_time);
+    struct timeval end_time;
+    int rc = gettimeofday(&end_time, NULL);
     assert(rc == 0);
     return (end_time.tv_sec - start_time_.tv_sec
-            + (double) (end_time.tv_nsec - start_time_.tv_nsec) / 1e9);
+            + (double) (end_time.tv_usec - start_time_.tv_usec) / 1e6);
   }
 
   void print_iters(uint64_t iterations) {
