@@ -1,4 +1,7 @@
 
+// This is required on Mac OS X for getting PRI* macros #defined.
+#define __STDC_FORMAT_MACROS
+
 #include <assert.h>
 #include <inttypes.h>
 #include <stdint.h>
@@ -78,7 +81,7 @@ static void toggle(int iterations, int addr_count) {
 
 void main_prog() {
   g_mem = (char *) mmap(NULL, mem_size, PROT_READ | PROT_WRITE,
-                        MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+                        MAP_ANON | MAP_PRIVATE, -1, 0);
   assert(g_mem != MAP_FAILED);
 
   printf("clear\n");
