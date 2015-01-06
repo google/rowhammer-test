@@ -21,11 +21,16 @@ How to run the test:
 
 The test should work on Linux or Mac OS X, on x86 only.
 
-**Warning #1:** Be careful not to run this test on machines that
-contain important data.  On machines that are susceptible to the
-rowhammer problem, this test could cause bit flips that crash the
-machine, or worse, cause bit flips in data that gets written back to
-disc.
+**Warning #1:** We are providing this code as-is.  You are responsible
+for protecting yourself, your property and data, and others from any
+risks caused by this code.  This code may cause unexpected and
+undesirable behavior to occur on your machine.  This code may not
+detect the vulnerability on your machine.
+
+Be careful not to run this test on machines that contain important
+data.  On machines that are susceptible to the rowhammer problem, this
+test could cause bit flips that crash the machine, or worse, cause bit
+flips in data that gets written back to disc.
 
 **Warning #2:** If you find that a computer is susceptible to the
 rowhammer problem, you may want to avoid using it as a multi-user
