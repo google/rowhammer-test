@@ -40,6 +40,21 @@ problem, one process can corrupt pages used by other processes or by
 the kernel.
 
 
+## Mailing list
+
+We invite people to post results from this test on the following
+mailing list:
+
+https://groups.google.com/group/rowhammer-discuss/
+
+This mailing list is intended to be used for:
+
+* Reporting experimental results.
+* Discussing avenues of exploitation for rowhammer-induced bit flips.
+* Discussing mitigations.
+* Any other discussion of the rowhammer problem.
+
+
 ## How the test works
 
 A row hammering attempt involves picking two or more memory locations
