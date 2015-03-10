@@ -195,7 +195,7 @@ uint64_t HammerAddressesStandard(
     uint64_t number_of_reads) {
   uint64_t* first_pointer = reinterpret_cast<uint64_t*>(first_range.first);
   uint64_t* second_pointer = reinterpret_cast<uint64_t*>(second_range.first);
-  volatile uint64_t sum = 0;
+  uint64_t sum = 0;
 
   while (number_of_reads-- > 0) {
     sum += first_pointer[0];
@@ -272,7 +272,7 @@ uint64_t HammerAllReachablePages(uint64_t presumed_row_size,
           memset(target_page, 0xFF, 0x1000);
         }
         // Test sleep code to see how this affects the distribution.
-        sleep(1);
+        //sleep(1);
         // Now hammer the two pages we care about.
         std::pair<uint64_t, uint64_t> first_page_range(
             reinterpret_cast<uint64_t>(first_row_page), 
