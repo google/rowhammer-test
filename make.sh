@@ -17,3 +17,5 @@
 set -eu
 
 g++ -g -Wall -Werror -O2 rowhammer_test.cc -o rowhammer_test
+g++ -g -std=c++11 double_sided_rowhammer.cc -o double_sided_rowhammer
+# Throws some errors with -Wall
