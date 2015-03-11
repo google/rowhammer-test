@@ -21,7 +21,7 @@
 // ./test_double_sided_hammering [-t nsecs] [-p percentage] [-f outputfile]
 //
 // Hammers for nsecs seconds, acquires the described fraction of memory (0.0
-// to 0.9 or so). Normally writes to stdout, but if -f is provided, will fork
+// to 0.5 or so). Normally writes to stdout, but if -f is provided, will fork
 // and write to the specified file instead.
 
 #include <asm/unistd.h>
@@ -48,13 +48,13 @@
 #include <vector>
 
 // The fraction of physical memory that should be mapped for testing.
-double fraction_of_physical_memory = 0.3;
+double fraction_of_physical_memory = 0.5;
 
 // The time to hammer before aborting. Defaults to one hour.
 uint64_t number_of_seconds_to_hammer = 3600;
 
 // The number of memory reads to try.
-uint64_t number_of_reads = 1000*1024;
+uint64_t number_of_reads = 1024*1024;
 
 // Obtain the size of the physical memory of the system.
 uint64_t GetPhysicalMemorySize() {
@@ -92,6 +92,7 @@ uint64_t GetPageFrameNumber(int pagemap, uint8_t* virtual_address) {
     // Read the entry in the pagemap.
     off_t pos = lseek(pagemap,
         (reinterpret_cast<uintptr_t>(virtual_address) / 0x1000) * 8, SEEK_SET);
+    assert(pos > 0);
     uint64_t value;
     int got = read(pagemap, &value, 8);
     assert(got == 8);
@@ -149,6 +150,7 @@ bool GetMappingsForPhysicalRanges(
       int pos = lseek(kpageflags, page_frame_number * 8, SEEK_SET);
       int got = read(kpageflags, &page_flags, 8);
       assert(got == 8);
+      assert(pos > 0);
     }
 
     uint64_t physical_address;
@@ -180,22 +182,13 @@ bool GetMappingsForPhysicalRanges(
   return false;
 }
 
-//
-// Example code for perf_event_open from the perf_event_open manpage.
-static long perf_event_open(struct perf_event_attr *hw_event, pid_t pid,
-  int cpu, int group_fd, unsigned long flags) {
-  int ret;
-  ret = syscall(__NR_perf_event_open, hw_event, pid, cpu, group_fd, flags);
-  return ret;
-}
-
 uint64_t HammerAddressesStandard(
     const std::pair<uint64_t, uint64_t>& first_range,
     const std::pair<uint64_t, uint64_t>& second_range,
     uint64_t number_of_reads) {
   uint64_t* first_pointer = reinterpret_cast<uint64_t*>(first_range.first);
   uint64_t* second_pointer = reinterpret_cast<uint64_t*>(second_range.first);
-  volatile uint64_t sum = 0;
+  uint64_t sum = 0;
 
   while (number_of_reads-- > 0) {
     sum += first_pointer[0];
@@ -271,8 +264,6 @@ uint64_t HammerAllReachablePages(uint64_t presumed_row_size,
         for (uint8_t* target_page : pages_per_row[row_index+1]) {
           memset(target_page, 0xFF, 0x1000);
         }
-        // Test sleep code to see how this affects the distribution.
-        sleep(1);
         // Now hammer the two pages we care about.
         std::pair<uint64_t, uint64_t> first_page_range(
             reinterpret_cast<uint64_t>(first_row_page), 
@@ -313,6 +304,7 @@ uint64_t HammerAllReachableRows(HammerFunction* hammer,
 
   uint64_t result = HammerAllReachablePages(1024*256, mapping, mapping_size,
     hammer, number_of_reads);
+  return result;
 }
 
 void HammeredEnough(int sig) {
@@ -360,7 +352,8 @@ int main(int argc, char** argv) {
       fflush(stdout);
       fgetpos(stdout, &pos);
       fd = dup(fileno(stdout));
-      freopen(outputfilename, "w", stdout);
+      assert(fd > 0);
+      assert(freopen(outputfilename, "w", stdout) != NULL);
       alarm(number_of_seconds_to_hammer);
       HammerAllReachableRows(&HammerAddressesStandard, number_of_reads);
     }
