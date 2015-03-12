@@ -30,7 +30,6 @@
 #include <fcntl.h>
 #include <inttypes.h>
 #include <linux/kernel-page-flags.h>
-#include <linux/perf_event.h>
 #include <map>
 #include <stdint.h>
 #include <stdio.h>
@@ -178,15 +177,6 @@ bool GetMappingsForPhysicalRanges(
     return true;
   }
   return false;
-}
-
-//
-// Example code for perf_event_open from the perf_event_open manpage.
-static long perf_event_open(struct perf_event_attr *hw_event, pid_t pid,
-  int cpu, int group_fd, unsigned long flags) {
-  int ret;
-  ret = syscall(__NR_perf_event_open, hw_event, pid, cpu, group_fd, flags);
-  return ret;
 }
 
 uint64_t HammerAddressesStandard(
