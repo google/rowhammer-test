@@ -318,7 +318,7 @@ int main(int argc, char** argv) {
   char outputfilename[1024];
 
   int opt;
-  while ((opt = getopt(argc, argv, "t:p:f:r:")) != -1) {
+  while ((opt = getopt(argc, argv, "t:p:f:")) != -1) {
     switch (opt) {
       case 't':
         number_of_seconds_to_hammer = atoi(optarg);
