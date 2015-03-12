@@ -88,14 +88,13 @@ bool IsRangeInMap(const std::pair<uint64_t, uint64_t>& range,
 }
 
 uint64_t GetPageFrameNumber(int pagemap, uint8_t* virtual_address) {
-    // Read the entry in the pagemap.
-    off_t pos = lseek(pagemap,
-        (reinterpret_cast<uintptr_t>(virtual_address) / 0x1000) * 8, SEEK_SET);
-    uint64_t value;
-    int got = read(pagemap, &value, 8);
-    assert(got == 8);
-    uint64_t page_frame_number = value & ((1ULL << 54)-1);
-    return page_frame_number; 
+  // Read the entry in the pagemap.
+  uint64_t value;
+  int got = pread(pagemap, &value, 8,
+                  (reinterpret_cast<uintptr_t>(virtual_address) / 0x1000) * 8);
+  assert(got == 8);
+  uint64_t page_frame_number = value & ((1ULL << 54)-1);
+  return page_frame_number;
 }
 
 void SetupMapping(uint64_t* mapping_size, void** mapping) {
@@ -145,8 +144,7 @@ bool GetMappingsForPhysicalRanges(
     // Read the flags for this page if we have access to kpageflags.
     uint64_t page_flags = 0;
     if (kpageflags >= 0) {
-      int pos = lseek(kpageflags, page_frame_number * 8, SEEK_SET);
-      int got = read(kpageflags, &page_flags, 8);
+      int got = pread(kpageflags, &page_flags, 8, page_frame_number * 8);
       assert(got == 8);
     }
 
