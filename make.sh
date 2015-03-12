@@ -17,3 +17,6 @@
 set -eu
 
 g++ -g -Wall -Werror -O2 rowhammer_test.cc -o rowhammer_test
+
+# TODO: Add "-Wall" when warnings are fixed.
+g++ -std=c++11 -g -O2 double_sided_rowhammer.cc -o double_sided_rowhammer
