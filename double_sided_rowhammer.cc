@@ -18,7 +18,7 @@
 // Compilation instructions:
 //   g++ -std=c++11 [filename]
 //
-// ./test_double_sided_hammering [-t nsecs] [-p percentage] [-f outputfile]
+// ./double_sided_rowhammer [-t nsecs] [-p percentage] [-f outputfile]
 //
 // Hammers for nsecs seconds, acquires the described fraction of memory (0.0
 // to 0.9 or so). Normally writes to stdout, but if -f is provided, will fork
