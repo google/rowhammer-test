@@ -18,11 +18,10 @@
 // Compilation instructions:
 //   g++ -std=c++11 [filename]
 //
-// ./double_sided_rowhammer [-t nsecs] [-p percentage] [-f outputfile]
+// ./double_sided_rowhammer [-t nsecs] [-p percentage]
 //
 // Hammers for nsecs seconds, acquires the described fraction of memory (0.0
-// to 0.9 or so). Normally writes to stdout, but if -f is provided, will fork
-// and write to the specified file instead.
+// to 0.9 or so).
 
 #include <asm/unistd.h>
 #include <assert.h>
@@ -313,11 +312,9 @@ void HammeredEnough(int sig) {
 int main(int argc, char** argv) {
   // Turn off stdout buffering when it is a pipe.
   setvbuf(stdout, NULL, _IONBF, 0);
-  bool should_fork = false;
-  char outputfilename[1024];
 
   int opt;
-  while ((opt = getopt(argc, argv, "t:p:f:")) != -1) {
+  while ((opt = getopt(argc, argv, "t:p:")) != -1) {
     switch (opt) {
       case 't':
         number_of_seconds_to_hammer = atoi(optarg);
@@ -325,13 +322,8 @@ int main(int argc, char** argv) {
       case 'p':
         fraction_of_physical_memory = atof(optarg);
         break;
-      case 'f':
-        memset(outputfilename, 0, sizeof(outputfilename));
-        strncpy(outputfilename, optarg, 1023);
-        should_fork = true;
-        break;
       default:
-        fprintf(stderr, "Usage: %s [-t nsecs] [-p percent] [-f outfile]\n", 
+        fprintf(stderr, "Usage: %s [-t nsecs] [-p percent]\n", 
             argv[0]);
         exit(EXIT_FAILURE);
     }
@@ -339,21 +331,7 @@ int main(int argc, char** argv) {
 
   signal(SIGALRM, HammeredEnough);
 
-  if (should_fork) {
-    pid_t pid = fork();
-    if (pid == 0) {
-      fpos_t pos;
-      int fd;
-      fflush(stdout);
-      fgetpos(stdout, &pos);
-      fd = dup(fileno(stdout));
-      freopen(outputfilename, "w", stdout);
-      alarm(number_of_seconds_to_hammer);
-      HammerAllReachableRows(&HammerAddressesStandard, number_of_reads);
-    }
-  } else {
-    printf("[!] Starting the testing process...\n");
-    alarm(number_of_seconds_to_hammer);
-    HammerAllReachableRows(&HammerAddressesStandard, number_of_reads);
-  }
+  printf("[!] Starting the testing process...\n");
+  alarm(number_of_seconds_to_hammer);
+  HammerAllReachableRows(&HammerAddressesStandard, number_of_reads);
 }
