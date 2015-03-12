@@ -293,14 +293,13 @@ uint64_t HammerAllReachablePages(uint64_t presumed_row_size,
   return total_bitflips;
 }
 
-uint64_t HammerAllReachableRows(HammerFunction* hammer, 
-    uint64_t number_of_reads) {
+void HammerAllReachableRows(HammerFunction* hammer, uint64_t number_of_reads) {
   uint64_t mapping_size;
   void* mapping;
   SetupMapping(&mapping_size, &mapping);
 
-  uint64_t result = HammerAllReachablePages(1024*256, mapping, mapping_size,
-    hammer, number_of_reads);
+  HammerAllReachablePages(1024*256, mapping, mapping_size,
+                          hammer, number_of_reads);
 }
 
 void HammeredEnough(int sig) {
