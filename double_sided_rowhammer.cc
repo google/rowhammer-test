@@ -260,8 +260,6 @@ uint64_t HammerAllReachablePages(uint64_t presumed_row_size,
         for (uint8_t* target_page : pages_per_row[row_index+1]) {
           memset(target_page, 0xFF, 0x1000);
         }
-        // Test sleep code to see how this affects the distribution.
-        sleep(1);
         // Now hammer the two pages we care about.
         std::pair<uint64_t, uint64_t> first_page_range(
             reinterpret_cast<uint64_t>(first_row_page), 
