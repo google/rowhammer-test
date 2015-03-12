@@ -180,8 +180,10 @@ uint64_t HammerAddressesStandard(
     const std::pair<uint64_t, uint64_t>& first_range,
     const std::pair<uint64_t, uint64_t>& second_range,
     uint64_t number_of_reads) {
-  uint64_t* first_pointer = reinterpret_cast<uint64_t*>(first_range.first);
-  uint64_t* second_pointer = reinterpret_cast<uint64_t*>(second_range.first);
+  volatile uint64_t* first_pointer =
+      reinterpret_cast<uint64_t*>(first_range.first);
+  volatile uint64_t* second_pointer =
+      reinterpret_cast<uint64_t*>(second_range.first);
   uint64_t sum = 0;
 
   while (number_of_reads-- > 0) {
