@@ -45,6 +45,8 @@
 #include <unistd.h>
 #include <vector>
 
+namespace {
+
 // The fraction of physical memory that should be mapped for testing.
 double fraction_of_physical_memory = 0.3;
 
@@ -59,31 +61,6 @@ uint64_t GetPhysicalMemorySize() {
   struct sysinfo info;
   sysinfo( &info );
   return (size_t)info.totalram * (size_t)info.mem_unit;
-}
-
-// If physical_address is in the range, put (physical_address, virtual_address)
-// into the map.
-bool PutPointerIfInAddressRange(const std::pair<uint64_t, uint64_t>& range,
-    uint64_t physical_address, uint8_t* virtual_address,
-    std::map<uint64_t, uint8_t*>& pointers) {
-  if (physical_address >= range.first && physical_address <= range.second) {
-    printf("[!] Found desired physical address %lx at virtual %lx\n", 
-        (uint64_t)physical_address, (uint64_t)virtual_address);
-    pointers[physical_address] = virtual_address;
-    return true;
-  }
-  return false;
-}
-
-bool IsRangeInMap(const std::pair<uint64_t, uint64_t>& range,
-    const std::map<uint64_t, uint8_t*>& mapping) {
-  for (uint64_t check = range.first; check <= range.second; check += 0x1000) {
-    if (mapping.find(check) == mapping.end()) {
-      printf("[!] Failed to find physical memory at %lx\n", check);
-      return false;
-    }
-  }
-  return true;
 }
 
 uint64_t GetPageFrameNumber(int pagemap, uint8_t* virtual_address) {
@@ -113,67 +90,6 @@ void SetupMapping(uint64_t* mapping_size, void** mapping) {
     temporary[0] = index;
   }
   printf("done\n");
-}
-
-// Build a memory mapping that is big enough to cover all of physical memory.
-bool GetMappingsForPhysicalRanges(
-    const std::pair<uint64_t, uint64_t>& physical_range_A_to_hammer, 
-    std::map<uint64_t, uint8_t*>& pointers_to_hammer_A,
-    const std::pair<uint64_t, uint64_t>& physical_range_B_to_hammer,
-    std::map<uint64_t, uint8_t*>& pointers_to_hammer_B,
-    const std::pair<uint64_t, uint64_t>& physical_range_to_check,
-    std::map<uint64_t, uint8_t*>& pointers_to_range_to_check,
-    void** out_mapping) {
-
-  uint64_t mapping_size;
-  void* mapping;
-  SetupMapping(&mapping_size, &mapping);
-
-  int pagemap = open("/proc/self/pagemap", O_RDONLY);
-  assert(pagemap >= 0);
-
-  // Don't assert if opening this fails, the code needs to run under usermode.
-  int kpageflags = open("/proc/kpageflags", O_RDONLY);
-
-  // Iterate over the entire mapping, identifying the physical addresses for 
-  // each 4k-page.
-  for (uint64_t offset = 0; offset < mapping_size; offset += 0x1000) {
-    uint8_t* virtual_address = static_cast<uint8_t*>(mapping) + offset;
-    uint64_t page_frame_number = GetPageFrameNumber(pagemap, virtual_address);
-    // Read the flags for this page if we have access to kpageflags.
-    uint64_t page_flags = 0;
-    if (kpageflags >= 0) {
-      int got = pread(kpageflags, &page_flags, 8, page_frame_number * 8);
-      assert(got == 8);
-    }
-
-    uint64_t physical_address;
-    if (page_flags & KPF_HUGE) {
-      printf("[!] %lx is on huge page\n", (uint64_t)virtual_address);
-      physical_address = (page_frame_number * 0x1000) + 
-        (reinterpret_cast<uintptr_t>(virtual_address) & (0x200000-1));
-    } else {
-      physical_address = (page_frame_number * 0x1000) + 
-       (reinterpret_cast<uintptr_t>(virtual_address) & 0xFFF);
-    }
-
-    //printf("[!] %lx is %lx\n", (uint64_t)virtual_address, 
-    //    (uint64_t)physical_address);
-    PutPointerIfInAddressRange(physical_range_A_to_hammer, physical_address,
-       virtual_address, pointers_to_hammer_A);
-    PutPointerIfInAddressRange(physical_range_B_to_hammer, physical_address,
-       virtual_address, pointers_to_hammer_B);
-    PutPointerIfInAddressRange(physical_range_to_check, physical_address,
-       virtual_address, pointers_to_range_to_check);
-  }
-  // Check if all physical addresses the caller asked for are in the resulting
-  // map.
-  if (IsRangeInMap(physical_range_A_to_hammer, pointers_to_hammer_A)
-      && IsRangeInMap(physical_range_B_to_hammer, pointers_to_hammer_B)
-      && IsRangeInMap(physical_range_to_check, pointers_to_range_to_check)) {
-    return true;
-  }
-  return false;
 }
 
 uint64_t HammerAddressesStandard(
@@ -308,6 +224,8 @@ void HammeredEnough(int sig) {
   fflush(stderr);
   exit(0);
 }
+
+}  // namespace
 
 int main(int argc, char** argv) {
   // Turn off stdout buffering when it is a pipe.
