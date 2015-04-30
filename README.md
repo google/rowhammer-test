@@ -19,7 +19,9 @@ How to run the test:
 ./rowhammer_test
 ```
 
-The test should work on Linux or Mac OS X, on x86 only.
+The test should work on Linux or Mac OS X.  It works on x86 only
+(either x86-32 or x86-64), because it relies on x86's `CLFLUSH`
+instruction for flushing cache lines.
 
 **Warning #1:** We are providing this code as-is.  You are responsible
 for protecting yourself, your property and data, and others from any
