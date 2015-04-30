@@ -7,10 +7,16 @@ accessing a row of memory can cause bit flips in adjacent rows.  This
 repo contains a program for testing for the rowhammer problem which
 runs as a normal userland process.
 
-The rowhammer problem is described by Yoongu Jim et al's paper,
-"Flipping Bits in Memory Without Accessing Them: An Experimental Study
-of DRAM Disturbance Errors"
-(http://users.ece.cmu.edu/~yoonguk/papers/kim-isca14.pdf).
+The rowhammer problem is described by:
+
+* Yoongu Jim et al's paper, "[Flipping Bits in Memory Without
+  Accessing Them: An Experimental Study of DRAM Disturbance
+  Errors](http://users.ece.cmu.edu/~yoonguk/papers/kim-isca14.pdf)"
+  (2014).
+
+* Our blog post, "[Exploiting the DRAM rowhammer bug to gain kernel
+  privileges](http://googleprojectzero.blogspot.com/2015/03/exploiting-dram-rowhammer-bug-to-gain.html)"
+  (2015), on the blog of Google's Project Zero.
 
 How to run the test:
 
