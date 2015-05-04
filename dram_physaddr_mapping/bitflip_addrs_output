@@ -1,0 +1,138 @@
+result:
+	diff=-39980
+	addr=0x06cd1f680 -> row=01101100110100 rank=0 bank=011 col_hi=1101101 channel=0 col_lo=000000 (victim)
+	addr=0x06cd59000 -> row=01101100110101 rank=0 bank=011 col_hi=0100000 channel=0 col_lo=000000 (aggressor1)
+	addr=0x06ccc1000 -> row=01101100110011 rank=0 bank=011 col_hi=0100000 channel=0 col_lo=000000 (aggressor2)
+	fits=True
+result:
+	diff=-3a0f8
+	addr=0x07092ef08 -> row=01110000100100 rank=1 bank=111 col_hi=1011110 channel=0 col_lo=001000 (victim)
+	addr=0x070969000 -> row=01110000100101 rank=1 bank=111 col_hi=0100000 channel=0 col_lo=000000 (aggressor1)
+	addr=0x0708f1000 -> row=01110000100011 rank=1 bank=111 col_hi=0100000 channel=0 col_lo=000000 (aggressor2)
+	fits=True
+result:
+	diff=-408e8
+	addr=0x1a1d9b718 -> row=10100001110110 rank=0 bank=000 col_hi=1101110 channel=0 col_lo=011000 (victim)
+	addr=0x1a1ddc000 -> row=10100001110111 rank=0 bank=000 col_hi=0000000 channel=0 col_lo=000000 (aggressor1)
+	addr=0x1a1d57000 -> row=10100001110101 rank=0 bank=000 col_hi=1100000 channel=0 col_lo=000000 (aggressor2)
+	fits=True
+result:
+	diff=-453e0
+	addr=0x072321c20 -> row=01110010001100 rank=1 bank=100 col_hi=0111000 channel=0 col_lo=100000 (victim)
+	addr=0x072367000 -> row=01110010001101 rank=1 bank=100 col_hi=1100000 channel=0 col_lo=000000 (aggressor1)
+	addr=0x1a14de000 -> row=10100001010011 rank=0 bank=100 col_hi=1000000 channel=0 col_lo=000000 (aggressor2)
+	fits=True
+result:
+	diff=2fb30
+	addr=0x194d27b30 -> row=10010100110100 rank=1 bank=101 col_hi=1110110 channel=0 col_lo=110000 (victim)
+	addr=0x194cf8000 -> row=10010100110011 rank=1 bank=101 col_hi=0000000 channel=0 col_lo=000000 (aggressor1)
+	addr=0x194d63000 -> row=10010100110101 rank=1 bank=101 col_hi=1100000 channel=0 col_lo=000000 (aggressor2)
+	fits=True
+	unusual?
+result:
+	diff=-412d0
+	addr=0x07b622d30 -> row=01111011011000 rank=1 bank=000 col_hi=1011010 channel=0 col_lo=110000 (victim)
+	addr=0x07b664000 -> row=01111011011001 rank=1 bank=000 col_hi=0000000 channel=0 col_lo=000000 (aggressor1)
+	addr=0x07b6ed000 -> row=01111011011011 rank=1 bank=000 col_hi=0100000 channel=0 col_lo=000000 (aggressor2)
+	fits=True
+result:
+	diff=-443e0
+	addr=0x072321c20 -> row=01110010001100 rank=1 bank=100 col_hi=0111000 channel=0 col_lo=100000 (victim)
+	addr=0x072366000 -> row=01110010001101 rank=1 bank=100 col_hi=1000000 channel=0 col_lo=000000 (aggressor1)
+	addr=0x061503000 -> row=01100001010100 rank=0 bank=100 col_hi=1100000 channel=0 col_lo=000000 (aggressor2)
+	fits=True
+result:
+	diff=-443e0
+	addr=0x072321c20 -> row=01110010001100 rank=1 bank=100 col_hi=0111000 channel=0 col_lo=100000 (victim)
+	addr=0x072366000 -> row=01110010001101 rank=1 bank=100 col_hi=1000000 channel=0 col_lo=000000 (aggressor1)
+	addr=0x05e9cf000 -> row=01011110100111 rank=0 bank=100 col_hi=1100000 channel=0 col_lo=000000 (aggressor2)
+	fits=True
+result:
+	diff=3dc10
+	addr=0x193643c10 -> row=10010011011001 rank=0 bank=001 col_hi=1111000 channel=0 col_lo=010000 (victim)
+	addr=0x193606000 -> row=10010011011000 rank=0 bank=001 col_hi=1000000 channel=0 col_lo=000000 (aggressor1)
+	addr=0x193825000 -> row=10010011100000 rank=1 bank=001 col_hi=0100000 channel=0 col_lo=000000 (aggressor2)
+	fits=True
+result:
+	diff=3c980
+	addr=0x171272980 -> row=01110001001001 rank=1 bank=101 col_hi=1010011 channel=0 col_lo=000000 (victim)
+	addr=0x171236000 -> row=01110001001000 rank=1 bank=101 col_hi=1000000 channel=0 col_lo=000000 (aggressor1)
+	addr=0x171417000 -> row=01110001010000 rank=0 bank=101 col_hi=1100000 channel=0 col_lo=000000 (aggressor2)
+	fits=True
+result:
+	diff=-42100
+	addr=0x17a822f00 -> row=01111010100000 rank=1 bank=000 col_hi=1011110 channel=0 col_lo=000000 (victim)
+	addr=0x17a865000 -> row=01111010100001 rank=1 bank=000 col_hi=0100000 channel=0 col_lo=000000 (aggressor1)
+	addr=0x17a644000 -> row=01111010011001 rank=0 bank=000 col_hi=0000000 channel=0 col_lo=000000 (aggressor2)
+	fits=True
+result:
+	diff=-c4cf0
+	addr=0x080a34310 -> row=10000000101000 rank=1 bank=101 col_hi=0000110 channel=0 col_lo=010000 (victim)
+	addr=0x080af9000 -> row=10000000101011 rank=1 bank=101 col_hi=0100000 channel=0 col_lo=000000 (aggressor1)
+	addr=0x17ebaf000 -> row=01111110101110 rank=1 bank=101 col_hi=1100000 channel=0 col_lo=000000 (aggressor2)
+	fits=False
+	unusual?
+result:
+	diff=-402f0
+	addr=0x1961abd10 -> row=10010110000110 rank=1 bank=100 col_hi=1111010 channel=0 col_lo=010000 (victim)
+	addr=0x1961ec000 -> row=10010110000111 rank=1 bank=100 col_hi=0000000 channel=0 col_lo=000000 (aggressor1)
+	addr=0x196165000 -> row=10010110000101 rank=1 bank=100 col_hi=0100000 channel=0 col_lo=000000 (aggressor2)
+	fits=True
+result:
+	diff=39d88
+	addr=0x0724c8d88 -> row=01110010010011 rank=0 bank=001 col_hi=0011011 channel=0 col_lo=001000 (victim)
+	addr=0x07248f000 -> row=01110010010010 rank=0 bank=001 col_hi=1100000 channel=0 col_lo=000000 (aggressor1)
+	addr=0x072515000 -> row=01110010010100 rank=0 bank=001 col_hi=0100000 channel=0 col_lo=000000 (aggressor2)
+	fits=True
+result:
+	diff=3aea0
+	addr=0x1716f1ea0 -> row=01110001011011 rank=1 bank=111 col_hi=0111101 channel=0 col_lo=100000 (victim)
+	addr=0x1716b7000 -> row=01110001011010 rank=1 bank=111 col_hi=1100000 channel=0 col_lo=000000 (aggressor1)
+	addr=0x07eb69000 -> row=01111110101101 rank=1 bank=111 col_hi=0100000 channel=0 col_lo=000000 (aggressor2)
+	fits=True
+result:
+	diff=-42f50
+	addr=0x16f3930b0 -> row=01101111001110 rank=0 bank=010 col_hi=1100001 channel=0 col_lo=110000 (victim)
+	addr=0x16f3d6000 -> row=01101111001111 rank=0 bank=010 col_hi=1000000 channel=0 col_lo=000000 (aggressor1)
+	addr=0x16f1f6000 -> row=01101111000111 rank=1 bank=010 col_hi=1000000 channel=0 col_lo=000000 (aggressor2)
+	fits=True
+result:
+	diff=455a0
+	addr=0x1772775a0 -> row=01110111001001 rank=1 bank=100 col_hi=1101011 channel=0 col_lo=100000 (victim)
+	addr=0x177232000 -> row=01110111001000 rank=1 bank=100 col_hi=1000000 channel=0 col_lo=000000 (aggressor1)
+	addr=0x072901000 -> row=01110010100100 rank=0 bank=100 col_hi=0100000 channel=0 col_lo=000000 (aggressor2)
+	fits=True
+result:
+	diff=-457d0
+	addr=0x077231830 -> row=01110111001000 rank=1 bank=100 col_hi=0110000 channel=0 col_lo=110000 (victim)
+	addr=0x077277000 -> row=01110111001001 rank=1 bank=100 col_hi=1100000 channel=0 col_lo=000000 (aggressor1)
+	addr=0x0772fc000 -> row=01110111001011 rank=1 bank=100 col_hi=0000000 channel=0 col_lo=000000 (aggressor2)
+	fits=True
+result:
+	diff=-3a0f0
+	addr=0x07bd2ef10 -> row=01111011110100 rank=1 bank=111 col_hi=1011110 channel=0 col_lo=010000 (victim)
+	addr=0x07bd69000 -> row=01111011110101 rank=1 bank=111 col_hi=0100000 channel=0 col_lo=000000 (aggressor1)
+	addr=0x07bcf3000 -> row=01111011110011 rank=1 bank=111 col_hi=1100000 channel=0 col_lo=000000 (aggressor2)
+	fits=True
+result:
+	diff=-435d0
+	addr=0x07e412a30 -> row=01111110010000 rank=0 bank=100 col_hi=1010100 channel=0 col_lo=110000 (victim)
+	addr=0x07e456000 -> row=01111110010001 rank=0 bank=100 col_hi=1000000 channel=0 col_lo=000000 (aggressor1)
+	addr=0x07e275000 -> row=01111110001001 rank=1 bank=100 col_hi=0100000 channel=0 col_lo=000000 (aggressor2)
+	fits=True
+result:
+	diff=340a8
+	addr=0x1730910a8 -> row=01110011000010 rank=0 bank=110 col_hi=0100001 channel=0 col_lo=101000 (victim)
+	addr=0x17305d000 -> row=01110011000001 rank=0 bank=110 col_hi=0100000 channel=0 col_lo=000000 (aggressor1)
+	addr=0x1730d7000 -> row=01110011000011 rank=0 bank=110 col_hi=1100000 channel=0 col_lo=000000 (aggressor2)
+	fits=True
+	unusual?
+result:
+	diff=-c6cf0
+	addr=0x080a34310 -> row=10000000101000 rank=1 bank=101 col_hi=0000110 channel=0 col_lo=010000 (victim)
+	addr=0x080afb000 -> row=10000000101011 rank=1 bank=101 col_hi=1100000 channel=0 col_lo=000000 (aggressor1)
+	addr=0x078671000 -> row=01111000011001 rank=1 bank=101 col_hi=0100000 channel=0 col_lo=000000 (aggressor2)
+	fits=False
+	unusual?
+
+Summary: of 22 results, 20 fit and 2 don't fit
