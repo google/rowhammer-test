@@ -56,6 +56,9 @@ uint64_t number_of_seconds_to_hammer = 3600;
 // The number of memory reads to try.
 uint64_t number_of_reads = 1000*1024;
 
+// The number of dimm modules
+uint64_t number_of_channels = 2;
+
 // Obtain the size of the physical memory of the system.
 uint64_t GetPhysicalMemorySize() {
   struct sysinfo info;
@@ -152,8 +155,8 @@ uint64_t HammerAllReachablePages(uint64_t presumed_row_size,
   // We should have some pages for most rows now.
   for (uint64_t row_index = 0; row_index + 2 < pages_per_row.size(); 
       ++row_index) {
-    if ((pages_per_row[row_index].size() != 64) || 
-        (pages_per_row[row_index+2].size() != 64)) {
+    if ((pages_per_row[row_index].size() != 32*number_of_channels) || 
+        (pages_per_row[row_index+2].size() != 32*number_of_channels)) {
       printf("[!] Can't hammer row %ld - only got %ld/%ld pages "
           "in the rows above/below\n",
           row_index+1, pages_per_row[row_index].size(), 
@@ -213,7 +216,7 @@ void HammerAllReachableRows(HammerFunction* hammer, uint64_t number_of_reads) {
   void* mapping;
   SetupMapping(&mapping_size, &mapping);
 
-  HammerAllReachablePages(1024*256, mapping, mapping_size,
+  HammerAllReachablePages(number_of_channels * 1024 * 128, mapping, mapping_size,
                           hammer, number_of_reads);
 }
 
@@ -232,7 +235,7 @@ int main(int argc, char** argv) {
   setvbuf(stdout, NULL, _IONBF, 0);
 
   int opt;
-  while ((opt = getopt(argc, argv, "t:p:")) != -1) {
+  while ((opt = getopt(argc, argv, "t:p:d:")) != -1) {
     switch (opt) {
       case 't':
         number_of_seconds_to_hammer = atoi(optarg);
@@ -240,8 +243,12 @@ int main(int argc, char** argv) {
       case 'p':
         fraction_of_physical_memory = atof(optarg);
         break;
+      case 'd':
+        if (atoi(optarg) == 1)
+          number_of_channels = 1;
+        break;
       default:
-        fprintf(stderr, "Usage: %s [-t nsecs] [-p percent]\n", 
+        fprintf(stderr, "Usage: %s [-t nsecs] [-p percent] [-d dimms]\n", 
             argv[0]);
         exit(EXIT_FAILURE);
     }
