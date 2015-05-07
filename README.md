@@ -9,7 +9,7 @@ runs as a normal userland process.
 
 The rowhammer problem is described by:
 
-* Yoongu Jim et al's paper, "[Flipping Bits in Memory Without
+* Yoongu Kim et al's paper, "[Flipping Bits in Memory Without
   Accessing Them: An Experimental Study of DRAM Disturbance
   Errors](http://users.ece.cmu.edu/~yoonguk/papers/kim-isca14.pdf)"
   (2014).
