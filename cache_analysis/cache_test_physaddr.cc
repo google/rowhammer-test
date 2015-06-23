@@ -131,32 +131,46 @@ bool in_same_cache_set(uint64_t phys1, uint64_t phys2) {
   return get_cache_set(phys1) == get_cache_set(phys2);
 }
 
-int timing(int addr_count) {
-  size_t size = 16 << 20;
-  uintptr_t buf =
-    (uintptr_t) mmap(NULL, size, PROT_READ | PROT_WRITE,
-                     MAP_PRIVATE | MAP_ANONYMOUS | MAP_POPULATE, -1, 0);
-  assert(buf);
+class AddrFinder {
+  static const size_t size = 16 << 20;
+  uintptr_t buf_;
 
-  uintptr_t addrs[addr_count];
-  addrs[0] = buf;
-  uintptr_t phys1 = get_physical_addr(addrs[0]);
+ public:
+  AddrFinder() {
+    buf_ = (uintptr_t) mmap(NULL, size, PROT_READ | PROT_WRITE,
+                            MAP_PRIVATE | MAP_ANONYMOUS | MAP_POPULATE, -1, 0);
+    assert(buf_ != (uintptr_t) MAP_FAILED);
+  }
+
+  ~AddrFinder() {
+    int rc = munmap((void *) buf_, size);
+    assert(rc == 0);
+  }
 
   // Pick a set of addresses which we think belong to the same cache set.
-  uintptr_t next_addr = buf + page_size;
-  uintptr_t end_addr = buf + size;
-  int found = 1;
-  while (found < addr_count) {
-    assert(next_addr < end_addr);
-    uintptr_t addr = next_addr;
-    next_addr += page_size;
+  void get_set(uintptr_t *addrs, int addr_count) {
+    addrs[0] = buf_;
+    uint32_t cache_set = get_cache_set(get_physical_addr(addrs[0]));
 
-    uint64_t phys2 = get_physical_addr(addr);
-    if (in_same_cache_set(phys1, phys2)) {
-      addrs[found] = addr;
-      found++;
+    uintptr_t next_addr = buf_ + page_size;
+    uintptr_t end_addr = buf_ + size;
+    int found = 1;
+    while (found < addr_count) {
+      assert(next_addr < end_addr);
+      uintptr_t addr = next_addr;
+      next_addr += page_size;
+
+      if (get_cache_set(get_physical_addr(addr)) == cache_set) {
+        addrs[found++] = addr;
+      }
     }
   }
+};
+
+int timing(int addr_count) {
+  AddrFinder finder;
+  uintptr_t addrs[addr_count];
+  finder.get_set(addrs, addr_count);
 
   // Time memory accesses.
   int runs = 10;
@@ -183,9 +197,6 @@ int timing(int addr_count) {
   // eviction policy not using an exact LRU policy.
   std::sort(times, &times[runs]);
   int median_time = times[runs / 2];
-
-  int rc = munmap((void *) buf, size);
-  assert(rc == 0);
 
   return median_time;
 }
