@@ -109,10 +109,15 @@ int get_cache_slice(uint64_t phys_addr) {
   // Side Channel Attacks Against Kernel Space ASLR".
   //
   // On a 2-core machine, the CPU's hash function produces a 1-bit
-  // cache slice number which appears to be the XOR of h1 and h2.
+  // cache slice number which appears to be the XOR of h1 and h2, with
+  // one further change: Bit 32 appears to be included too.  (This is
+  // despite the fact that the paper says "It turned out that only the
+  // bits 31 to 17 are considered as input values".)
+  //
+  // This is based on testing on a Thinkpad X220 with low memory
+  // pressure.
 
-  // XOR of h1 and h2:
-  static const int bits[] = { 17, 18, 20, 22, 24, 25, 26, 27, 28, 30 };
+  static const int bits[] = { 17, 18, 20, 22, 24, 25, 26, 27, 28, 30, 32 };
 
   int count = sizeof(bits) / sizeof(bits[0]);
   int hash = 0;
