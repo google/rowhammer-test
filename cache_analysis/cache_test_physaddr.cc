@@ -130,10 +130,6 @@ uint32_t get_cache_set(uint64_t phys) {
   return bottom_part | (get_cache_slice(phys) << bits);
 }
 
-bool in_same_cache_set(uint64_t phys1, uint64_t phys2) {
-  return get_cache_set(phys1) == get_cache_set(phys2);
-}
-
 class AddrFinder {
   static const size_t size = 16 << 20;
   uintptr_t buf_;
@@ -226,7 +222,7 @@ int main() {
 
   // For a 12-way cache, we want to pick 13 addresses belonging to the
   // same cache set.  Measure the effect of picking more addresses to
-  // test whether in_same_cache_set() is correctly determining whether
+  // test whether get_cache_set() is correctly determining whether
   // addresses belong to the same cache set.
   int max_addr_count = 13 * 4;
 
