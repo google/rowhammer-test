@@ -21,6 +21,7 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <vector>
 
 // This program attempts to pick sets of memory locations that map to
 // the same L3 cache set.  It tests whether they really do map to the
@@ -37,6 +38,8 @@ namespace {
 
 const int page_size = 0x1000;
 int g_pagemap_fd = -1;
+
+bool g_randomise;
 
 // Extract the physical page number from a Linux /proc/PID/pagemap entry.
 uint64_t frame_number_from_pagemap(uint64_t value) {
@@ -134,12 +137,18 @@ bool in_same_cache_set(uint64_t phys1, uint64_t phys2) {
 class AddrFinder {
   static const size_t size = 16 << 20;
   uintptr_t buf_;
+  typedef std::vector<uintptr_t> PageList;
+  PageList pages_;
 
  public:
   AddrFinder() {
     buf_ = (uintptr_t) mmap(NULL, size, PROT_READ | PROT_WRITE,
                             MAP_PRIVATE | MAP_ANONYMOUS | MAP_POPULATE, -1, 0);
     assert(buf_ != (uintptr_t) MAP_FAILED);
+    for (uintptr_t ptr = buf_; ptr < buf_ + size; ptr += page_size)
+      pages_.push_back(ptr);
+    if (g_randomise)
+      std::random_shuffle(pages_.begin(), pages_.end());
   }
 
   ~AddrFinder() {
@@ -149,16 +158,14 @@ class AddrFinder {
 
   // Pick a set of addresses which we think belong to the same cache set.
   void get_set(uintptr_t *addrs, int addr_count) {
-    addrs[0] = buf_;
+    PageList::iterator next = pages_.begin();
+    addrs[0] = *next++;
     uint32_t cache_set = get_cache_set(get_physical_addr(addrs[0]));
 
-    uintptr_t next_addr = buf_ + page_size;
-    uintptr_t end_addr = buf_ + size;
     int found = 1;
     while (found < addr_count) {
-      assert(next_addr < end_addr);
-      uintptr_t addr = next_addr;
-      next_addr += page_size;
+      assert(next != pages_.end());
+      uintptr_t addr = *next++;
 
       if (get_cache_set(get_physical_addr(addr)) == cache_set) {
         addrs[found++] = addr;
@@ -223,10 +230,15 @@ int main() {
   // addresses belong to the same cache set.
   int max_addr_count = 13 * 4;
 
-  printf("Address count,Time (ns)\n");
+  printf("Address count,Time (ns) for randomise=false"
+         ",Time (ns) for randomise=true\n");
 
   for (int addr_count = 0; addr_count < max_addr_count; addr_count++) {
-    printf("%i,%i\n", addr_count, timing_mean(addr_count));
+    g_randomise = false;
+    int t0 = timing_mean(addr_count);
+    g_randomise = true;
+    int t1 = timing_mean(addr_count);
+    printf("%i,%i,%i\n", addr_count, t0, t1);
   }
   return 0;
 }
