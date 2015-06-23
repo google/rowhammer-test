@@ -92,11 +92,7 @@ int time_access(uintptr_t ptr) {
 // returns the number of the cache slice that the address maps to.
 //
 // This assumes a 2-core Sandy Bridge CPU.
-//
-// "bad_bit" lets us test whether this hash function is correct.  It
-// inverts whether the given bit number is included in the set of
-// address bits to hash.
-int get_cache_slice(uint64_t phys_addr, int bad_bit) {
+int get_cache_slice(uint64_t phys_addr) {
   // On a 4-core machine, the CPU's hash function produces a 2-bit
   // cache slice number, where the two bits are defined by "h1" and
   // "h2":
@@ -120,21 +116,18 @@ int get_cache_slice(uint64_t phys_addr, int bad_bit) {
   for (int i = 0; i < count; i++) {
     hash ^= (phys_addr >> bits[i]) & 1;
   }
-  if (bad_bit != -1) {
-    hash ^= (phys_addr >> bad_bit) & 1;
-  }
   return hash;
 }
 
-bool in_same_cache_set(uint64_t phys1, uint64_t phys2, int bad_bit) {
+bool in_same_cache_set(uint64_t phys1, uint64_t phys2) {
   // For Sandy Bridge, the bottom 17 bits determine the cache set
   // within the cache slice (or the location within a cache line).
   uint64_t mask = ((uint64_t) 1 << 17) - 1;
   return ((phys1 & mask) == (phys2 & mask) &&
-          get_cache_slice(phys1, bad_bit) == get_cache_slice(phys2, bad_bit));
+          get_cache_slice(phys1) == get_cache_slice(phys2));
 }
 
-int timing(int addr_count, int bad_bit) {
+int timing(int addr_count) {
   size_t size = 16 << 20;
   uintptr_t buf =
     (uintptr_t) mmap(NULL, size, PROT_READ | PROT_WRITE,
@@ -155,7 +148,7 @@ int timing(int addr_count, int bad_bit) {
     next_addr += page_size;
 
     uint64_t phys2 = get_physical_addr(addr);
-    if (in_same_cache_set(phys1, phys2, bad_bit)) {
+    if (in_same_cache_set(phys1, phys2)) {
       addrs[found] = addr;
       found++;
     }
@@ -193,11 +186,11 @@ int timing(int addr_count, int bad_bit) {
   return median_time;
 }
 
-int timing_mean(int addr_count, int bad_bit) {
+int timing_mean(int addr_count) {
   int runs = 10;
   int sum_time = 0;
   for (int i = 0; i < runs; i++)
-    sum_time += timing(addr_count, bad_bit);
+    sum_time += timing(addr_count);
   return sum_time / runs;
 }
 
@@ -215,26 +208,10 @@ int main() {
   // addresses belong to the same cache set.
   int max_addr_count = 13 * 4;
 
-  bool test_bad_bits = true;
-
-  printf("Address count");
-  printf(",Baseline hash (no bits changed)");
-  if (test_bad_bits) {
-    for (int bad_bit = 17; bad_bit < 32; bad_bit++) {
-      printf(",Change bit %i", bad_bit);
-    }
-  }
-  printf("\n");
+  printf("Address count,Time (ns)\n");
 
   for (int addr_count = 0; addr_count < max_addr_count; addr_count++) {
-    printf("%i", addr_count);
-    printf(",%i", timing_mean(addr_count, -1));
-    if (test_bad_bits) {
-      for (int bad_bit = 17; bad_bit < 32; bad_bit++) {
-        printf(",%i", timing_mean(addr_count, bad_bit));
-      }
-    }
-    printf("\n");
+    printf("%i,%i\n", addr_count, timing_mean(addr_count));
   }
   return 0;
 }
