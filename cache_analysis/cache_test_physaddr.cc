@@ -119,12 +119,16 @@ int get_cache_slice(uint64_t phys_addr) {
   return hash;
 }
 
-bool in_same_cache_set(uint64_t phys1, uint64_t phys2) {
+uint32_t get_cache_set(uint64_t phys) {
   // For Sandy Bridge, the bottom 17 bits determine the cache set
   // within the cache slice (or the location within a cache line).
-  uint64_t mask = ((uint64_t) 1 << 17) - 1;
-  return ((phys1 & mask) == (phys2 & mask) &&
-          get_cache_slice(phys1) == get_cache_slice(phys2));
+  int bits = 17 - 6;
+  uint32_t bottom_part = (phys >> 6) & ((1 << bits) - 1);
+  return bottom_part | (get_cache_slice(phys) << bits);
+}
+
+bool in_same_cache_set(uint64_t phys1, uint64_t phys2) {
+  return get_cache_set(phys1) == get_cache_set(phys2);
 }
 
 int timing(int addr_count) {
