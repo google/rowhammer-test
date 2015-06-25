@@ -1,0 +1,7 @@
+set style data histogram
+set logscale y
+set style fill solid 1.00 
+set xlabel "physically contiguous chunk size (pages)"
+set ylabel "number of chunks"
+
+plot 'contiguous_results' using 2:xticlabels(1) with histogram
