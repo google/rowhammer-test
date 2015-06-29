@@ -281,7 +281,7 @@ void main_prog() {
 
     Timer check_timer;
     bool found_error = check(NULL);
-    printf("  (check took %fs)\n", check_timer.get_diff());
+    printf("  Checking for bit flips took %f sec\n", check_timer.get_diff());
 
     if (iter % 100 == 0 || found_error) {
       // Report general progress stats:

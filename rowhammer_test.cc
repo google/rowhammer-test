@@ -114,7 +114,6 @@ void main_prog() {
     toggle(10, 8);
 
     Timer check_timer;
-    printf("check\n");
     uint64_t *end = (uint64_t *) (g_mem + mem_size);
     uint64_t *ptr;
     int errors = 0;
@@ -125,7 +124,7 @@ void main_prog() {
         errors++;
       }
     }
-    printf("  (check took %fs)\n", check_timer.get_diff());
+    printf("  Checking for bit flips took %f sec\n", check_timer.get_diff());
     if (errors)
       exit(1);
   }
