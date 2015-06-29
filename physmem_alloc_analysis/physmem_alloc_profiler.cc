@@ -54,8 +54,9 @@ int main(int argc, char **argv) {
         sleep_sec = atoi(optarg);
         break;
       default:
-        fprintf(stderr, "invalid argument\n");
-        exit(1);
+        fprintf(stderr, "Usage: %s [-a alloc_size] [-s sleep_sec]\n",
+            argv[0]);
+        exit(EXIT_FAILURE);
     }
   }
 
@@ -65,7 +66,7 @@ int main(int argc, char **argv) {
   FILE *out = fopen("physmem_alloc_results", "w+");
   if (out == NULL) {
     perror("open result file: ");
-    exit(1);
+    exit(EXIT_FAILURE);
   }
 
   size_t chunk_size = page_num * page_size; 
