@@ -85,13 +85,6 @@ class Timer {
     return (end_time.tv_sec - start_time_.tv_sec
             + (double) (end_time.tv_usec - start_time_.tv_usec) / 1e6);
   }
-
-  void print_iters(uint64_t iterations) {
-    double total_time = get_diff();
-    double iter_time = total_time / iterations;
-    printf("  %.3f nanosec per iteration: %g sec for %" PRId64 " iterations\n",
-           iter_time * 1e9, total_time, iterations);
-  }
 };
 
 #define ADDR_COUNT 4
@@ -143,12 +136,26 @@ static void row_hammer_inner(struct InnerSet inner) {
 }
 
 static void row_hammer(struct OuterSet *set) {
-  Timer t;
+  Timer timer;
   for (int j = 0; j < ITERATIONS; j++) {
     row_hammer_inner(set->inner[j]);
     g_address_sets_tried++;
   }
-  t.print_iters(ITERATIONS * ADDR_COUNT * toggles);
+
+  // Print statistics derived from the time and number of accesses.
+  double time_taken = timer.get_diff();
+  printf("  Took %.1f ms per address set\n",
+         time_taken / ITERATIONS * 1e3);
+  printf("  Took %g sec in total for %i address sets\n",
+         time_taken, ITERATIONS);
+  int memory_accesses = ITERATIONS * ADDR_COUNT * toggles;
+  printf("  Took %.3f nanosec per memory access (for %i memory accesses)\n",
+         time_taken / memory_accesses * 1e9,
+         memory_accesses);
+  int refresh_period_ms = 64;
+  printf("  This gives %i accesses per address per %i ms refresh period\n",
+         (int) (refresh_period_ms * 1e-3 * ITERATIONS * toggles / time_taken),
+         refresh_period_ms);
 }
 
 struct BitFlipInfo {
