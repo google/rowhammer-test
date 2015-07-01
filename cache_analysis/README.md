@@ -10,3 +10,10 @@ graphed.
 
 For more explanation, see:
 http://lackingrhoticity.blogspot.com/2015/04/l3-cache-mapping-on-sandy-bridge-cpus.html
+
+The following usage generates the data for the graphs in the blog post:
+
+```
+./make.sh
+./cache_test_physaddr access_time_graph
+```
