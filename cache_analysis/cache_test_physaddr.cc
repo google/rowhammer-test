@@ -16,9 +16,14 @@
 #include <fcntl.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 #include <sys/mman.h>
 #include <time.h>
 #include <unistd.h>
+
+#include <asm/unistd.h>
+#include <linux/perf_event.h>
+#include <sys/ioctl.h>
 
 #include <algorithm>
 #include <vector>
@@ -63,6 +68,45 @@ uint64_t get_physical_addr(uintptr_t virtual_addr) {
   uint64_t frame_num = frame_number_from_pagemap(value);
   return (frame_num * page_size) | (virtual_addr & (page_size - 1));
 }
+
+long perf_event_open(struct perf_event_attr *hw_event, pid_t pid,
+                     int cpu, int group_fd, unsigned long flags) {
+  return syscall(__NR_perf_event_open, hw_event, pid, cpu, group_fd, flags);
+}
+
+class Perf {
+  int fd_;
+
+ public:
+  Perf() {
+    struct perf_event_attr pe = {};
+    pe.type = PERF_TYPE_HARDWARE;
+    pe.size = sizeof(pe);
+    pe.config = PERF_COUNT_HW_CACHE_MISSES;
+    pe.disabled = 1;
+    pe.exclude_kernel = 1;
+    pe.exclude_hv = 1;
+
+    fd_ = perf_event_open(&pe, 0, -1, -1, 0);
+    assert(fd_ >= 0);
+  }
+
+  void start() {
+    int rc = ioctl(fd_, PERF_EVENT_IOC_RESET, 0);
+    assert(rc == 0);
+    rc = ioctl(fd_, PERF_EVENT_IOC_ENABLE, 0);
+    assert(rc == 0);
+  }
+
+  int stop() {
+    int rc = ioctl(fd_, PERF_EVENT_IOC_DISABLE, 0);
+    assert(rc == 0);
+    long long count;
+    int got = read(fd_, &count, sizeof(count));
+    assert(got == sizeof(count));
+    return count;
+  }
+};
 
 // Execute a CPU memory barrier.  This is an attempt to prevent memory
 // accesses from being reordered, in case reordering affects what gets
@@ -217,14 +261,7 @@ int timing_mean(int addr_count) {
   return sum_time / runs;
 }
 
-} // namespace
-
-int main() {
-  init_pagemap();
-
-  // Turn off stdout caching.
-  setvbuf(stdout, NULL, _IONBF, 0);
-
+void access_time_graph() {
   // For a 12-way cache, we want to pick 13 addresses belonging to the
   // same cache set.  Measure the effect of picking more addresses to
   // test whether get_cache_set() is correctly determining whether
@@ -241,5 +278,66 @@ int main() {
     int t1 = timing_mean(addr_count);
     printf("%i,%i,%i\n", addr_count, t0, t1);
   }
+}
+
+void miss_table() {
+  int addr_count = 13;
+  AddrFinder finder;
+  uintptr_t addrs[addr_count];
+  finder.get_set(addrs, addr_count);
+
+  Perf perf;
+
+  // Test memory accesses.
+  const int runs = 20;
+  int misses[runs][addr_count];
+  for (int run = 0; run < runs; run++) {
+    if (run == runs / 2) {
+      // Pause half way to see the effects of memory pressure from
+      // other processes.
+      sleep(1);
+    }
+    for (int i = 0; i < addr_count; i++) {
+      perf.start();
+      g_dummy += *(volatile int *) addrs[i];
+      mfence();
+      misses[run][i] = perf.stop();
+    }
+  }
+
+  // Print table of misses.
+  for (int run = 0; run < runs; run++) {
+    if (run == runs / 2) {
+      printf("After pause:\n");
+    }
+    int miss_count = 0;
+    for (int i = 0; i < addr_count; i++) {
+      int count = misses[run][i];
+      printf("%i", std::min(count, 9));
+      miss_count += count;
+    }
+    printf("  (total: %i)\n", miss_count);
+  }
+  printf("\n");
+}
+
+} // namespace
+
+int main(int argc, char **argv) {
+  init_pagemap();
+
+  // Turn off stdout caching.
+  setvbuf(stdout, NULL, _IONBF, 0);
+
+  if (argc == 2 && strcmp(argv[1], "access_time_graph") == 0) {
+    access_time_graph();
+  } else if (argc == 2 && strcmp(argv[1], "miss_table") == 0) {
+    for (;;)
+      miss_table();
+  } else {
+    printf("Usage: %s [access_time_graph | miss_table]\n", argv[0]);
+    return 1;
+  }
+
   return 0;
 }
