@@ -1,0 +1,53 @@
+<!--
+# Copyright 2015, Google, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+-->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.3/jquery.flot.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.3/jquery.flot.symbol.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.71/jquery.csv-0.71.min.js"></script>
+
+<script src="results.graph.csv.js"></script>
+
+<style>
+.graph_placeholder {
+  width: 800px;
+  height: 500px;
+}
+</style>
+
+<div id="graph_placeholder" class="graph_placeholder"></div>
+
+<script>
+
+// Time between refresh bursts, in nanoseconds.
+var kRefreshInterval = 64e-3 / 8192 * 1e9;
+
+var csv_strings = $.csv.toObjects(graph_data);
+
+var graph = $.map(csv_strings, function(a) {
+  var row = $.map(a, function(x) { return parseInt(x) });
+  return [[row[0] / kRefreshInterval, row[1]]];
+});
+
+$.plot("#graph_placeholder", [graph],
+       {
+         lines: { show: false },
+         points: { show: true, symbol: "cross" },
+         xaxis: { min: 0, tickSize: 1, tickDecimals: 0 },
+         yaxis: { min: 0 }
+       });
+
+</script>
