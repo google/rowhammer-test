@@ -250,10 +250,33 @@ void analyse_data(std::string base_filename) {
 
 }
 
-int main() {
+int main(int argc, char **argv) {
   const char *filename = "results";
-  // TODO: Allow these steps to be run individually via subcommands.
-  gather_times(filename);
-  analyse_data(filename);
+
+  bool do_gather = false;
+  bool do_analyse = false;
+  for (int i = 1; i < argc; ++i) {
+    if (strcmp(argv[i], "--gather") == 0) {
+      do_gather = true;
+    } else if (strcmp(argv[i], "--analyse") == 0) {
+      do_analyse = true;
+    } else {
+      printf("Unrecognised argument: %s\n", argv[i]);
+      printf("Usage: %s [--gather] [--analyse]\n", argv[0]);
+      return 1;
+    }
+  }
+
+  // If no arguments are given, run both.
+  if (argc == 1) {
+    do_gather = true;
+    do_analyse = true;
+  }
+
+  if (do_gather)
+    gather_times(filename);
+  if (do_analyse)
+    analyse_data(filename);
+
   return 0;
 }
