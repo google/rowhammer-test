@@ -13,6 +13,8 @@
 // limitations under the License.
 
 #include <assert.h>
+#include <inttypes.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -21,12 +23,15 @@
 #include <time.h>
 
 #include <string>
+#include <vector>
 
 
 namespace {
 
 // Time between refresh bursts, in nanoseconds.
 const int kRefreshInterval = 64e-3 / 8192 * 1e9;
+
+const double pi = 3.14159265;
 
 void clflush(void *addr) {
   asm volatile("clflush (%0)" : : "r" (addr));
@@ -112,6 +117,10 @@ void wrap_data_as_js_file(const char *input_filename,
   fclose(out);
 }
 
+double square(double x) {
+  return x * x;
+}
+
 struct TimePoint {
   uint32_t time; // Time from start of sampling, in nanoseconds.
   uint32_t taken; // Time taken to access memory, in nanoseconds.
@@ -119,7 +128,7 @@ struct TimePoint {
 
 void analyse_data(std::string base_filename) {
   uint32_t points_max = 200000;
-  struct TimePoint points[points_max];
+  TimePoint points[points_max];
   uint32_t points_idx = 0;
 
   // Read in the data file.
@@ -169,6 +178,74 @@ void analyse_data(std::string base_filename) {
   wrap_data_as_js_file((base_filename + ".graph.csv").c_str(),
                        (base_filename + ".graph.csv.js").c_str(),
                        "graph_data");
+
+  // When a memory access was delayed due to a memory refresh, we
+  // expect it to take longer than this time.
+  // TODO: Calculate this from the data rather than hard-coding it.
+  uint32_t cut_off_ns = 150;
+
+  // Filter out the uninteresting shorter times.  This will leave the
+  // refresh delay times plus some noisy times.
+  std::vector<TimePoint> longer_times;
+  for (uint32_t i = 0; i < points_idx; ++i) {
+    if (points[i].taken >= cut_off_ns)
+      longer_times.push_back(points[i]);
+  }
+  printf("Have %i time points, with %i longer than %i ns\n",
+         (int) points_idx, (int) longer_times.size(), (int) cut_off_ns);
+
+  // Calculate a Fourier transform of the data.  Note that this is a
+  // non-fast Fourier transform.
+  out = fopen((base_filename + ".fourier.csv").c_str(), "w");
+  assert(out);
+  fprintf(out, "Period (ns),Period (multiples of %i ns),"
+          "Frequency (multiples of 1/%i ns),"
+          "Magnitude,Derivative of magnitude,Scaled magnitude\n",
+          kRefreshInterval, kRefreshInterval);
+  uint32_t step = 1;
+  double mag_prev = 0;
+  double mag_deriv_prev = 0;
+  for (uint32_t period = kRefreshInterval / 8;
+       period < kRefreshInterval * 4;
+       period += step) {
+    double sum1 = 0;
+    double sum2 = 0;
+    double angle_multiplier = 2 * pi / period;
+    for (uint32_t i = 0; i < longer_times.size(); ++i) {
+      double angle = angle_multiplier * longer_times[i].time;
+      // Unlike a normal Fourier transform, we don't multiple the
+      // sin/cos values by the observed value (the "taken" field).  We
+      // don't really care about the magnitude of the delay we saw.
+      // In fact, it should be better to ignore the magnitude of the
+      // larger delays because these are more likely to be noise.
+      sum1 += sin(angle);
+      sum2 += cos(angle);
+    }
+    double period_multiple = (double) period / kRefreshInterval;
+    double freq_multiple = kRefreshInterval / (double) period;
+    double mag = sqrt(square(sum1) + square(sum2));
+    double mag_deriv = (mag - mag_prev) / step;
+    double scaled_mag = mag / (total_time / period);
+    fprintf(out, "%i,%f,%f,%f,%f,%f\n",
+            (int) period,
+            period_multiple,
+            freq_multiple,
+            mag,
+            mag_deriv,
+            scaled_mag);
+    if (mag_deriv_prev > 0 && mag_deriv <= 0 &&
+        scaled_mag >= 0.8 && scaled_mag < 1.1) {
+      printf("Spike at freq %.1f (%.6f) -> %.2f us -> %.1f ms: "
+             "saw %.3f of refreshes\n",
+             freq_multiple, freq_multiple,
+             period / 1e3,
+             period * 8192 / 1e6,
+             scaled_mag);
+    }
+    mag_prev = mag;
+    mag_deriv_prev = mag_deriv;
+  }
+  fclose(out);
 }
 
 }
