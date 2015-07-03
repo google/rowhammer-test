@@ -55,10 +55,17 @@ This produces two outputs:
 
 ## Future work
 
-It should be possible to measure the DRAM refresh rate from Javascript
-too, on browsers that provide a sufficiently high resolution timer.
+* **Javascript version:** It should be possible to measure the DRAM
+  refresh rate from Javascript too, on browsers that provide a
+  sufficiently high resolution timer.
 
-Javascript code can only used normal cached memory accesses --
-`CLFLUSH` is not available in Javascript -- so this would involve
-finding a sequence of memory accesses that consistently generates a
-cache miss.
+  Javascript code can only used normal cached memory accesses --
+  `CLFLUSH` is not available in Javascript -- so this would involve
+  finding a sequence of memory accesses that consistently generates a
+  cache miss.
+
+* **Testing for TRR support:** It should be possible to test whether a
+  memory controller supports Target Row Refresh (TRR) and has it
+  enabled.  If TRR is enabled, then if we repeatedly activate two
+  different rows, we should see a delay when the memory controller
+  refreshes their four neighbouring rows.
