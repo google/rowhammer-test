@@ -1,0 +1,5 @@
+# This is a configuration file for uploading code reviews to Rietveld
+# using "git cl" (from depot_tools).
+
+CODE_REVIEW_SERVER: codereview.chromium.org
+VIEW_VC: https://github.com/google/rowhammer-test/commit/
