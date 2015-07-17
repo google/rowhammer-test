@@ -7,6 +7,8 @@
   Yoongu Kim, Ross Daly, Jeremie Kim, Chris Fallin, Ji Hye Lee,
   Donghyuk Lee, Chris Wilkerson, Konrad Lai, Onur Mutlu, 2014.
 
+  * Cites "Alternate Hammering Test for Application-Specific DRAMs".
+
 * Paper: "[Active-Precharge Hammering on a Row Induced Failure in DDR3
   SDRAMs under 3x nm
   Technology](http://rsc.hanyang.ac.kr/homepage_v2/journal/KyungbaePark_et_al_Active-Precharge%20Hammering%20on%20a%20Row%20Induced%20Failure%20in%20DDR3%20SDRAMs%20under%203x%20nm%20Technology.pdf)",
@@ -28,6 +30,8 @@
     "row hammering".  "Active" and "precharge" refer to the commands a
     memory controller sends to a DRAM module for activating and
     closing rows.
+
+  * Cites "Alternate Hammering Test for Application-Specific DRAMs".
 
 * Paper: "[Architectural Support for Mitigating Row Hammering in DRAM
   Memories](http://users.ece.gatech.edu/~pnair6/rowhammer/rowhammer.pdf)",
@@ -53,6 +57,8 @@
 
   * Figure 2 is a graph showing the degree to which various benchmarks
     cause accidental row hammering via cached memory accesses.
+
+  * Cites Yoongu Kim et al's paper (cited as a preprint).
 
 ## Non-open-access papers
 
