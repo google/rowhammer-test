@@ -39,6 +39,14 @@
     [workshop's
     schedule](http://www.iirw.org/fileadmin/user_upload/2014progScheduleV333-1014.pdf).
 
+  * I discovered this paper via Wikipedia's [rowhammer
+    article](https://en.wikipedia.org/wiki/Row_hammer), where a
+    reference to the paper was added by one of the paper's authors on
+    16th March 2015.  The PDF appears to have been put online at the
+    same time.  The Internet Archive's [first record of
+    it](http://web.archive.org/web/*/http://rsc.hanyang.ac.kr/homepage_v2/journal/KyungbaePark_et_al_Active-Precharge%20Hammering%20on%20a%20Row%20Induced%20Failure%20in%20DDR3%20SDRAMs%20under%203x%20nm%20Technology.pdf)
+    is on 22nd March 2015.
+
   * Cites "Alternate Hammering Test for Application-Specific DRAMs".
 
 * Paper: "[Architectural Support for Mitigating Row Hammering in DRAM
