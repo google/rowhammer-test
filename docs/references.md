@@ -7,6 +7,9 @@
   Yoongu Kim, Ross Daly, Jeremie Kim, Chris Fallin, Ji Hye Lee,
   Donghyuk Lee, Chris Wilkerson, Konrad Lai, Onur Mutlu, 2014.
 
+  * Presented at ISCA (ACM/IEEE International Symposium on Computer
+    Architecture), 14th-18th June 2014.
+
   * Cites "Alternate Hammering Test for Application-Specific DRAMs".
 
 * Paper: "[Active-Precharge Hammering on a Row Induced Failure in DDR3
@@ -30,6 +33,11 @@
     "row hammering".  "Active" and "precharge" refer to the commands a
     memory controller sends to a DRAM module for activating and
     closing rows.
+
+  * Presented at the IEEE International Integrated Reliability
+    Workshop, 16th October 2014.  It is shown as "late news" in the
+    [workshop's
+    schedule](http://www.iirw.org/fileadmin/user_upload/2014progScheduleV333-1014.pdf).
 
   * Cites "Alternate Hammering Test for Application-Specific DRAMs".
 
@@ -58,6 +66,8 @@
   * Figure 2 is a graph showing the degree to which various benchmarks
     cause accidental row hammering via cached memory accesses.
 
+  * Published in Computer Architecture Letters.
+
   * Cites Yoongu Kim et al's paper (cited as a preprint).
 
 ## Non-open-access papers
@@ -65,8 +75,7 @@
 * Paper: "[Alternate Hammering Test for Application-Specific DRAMs and
   an Industrial Case
   Study](http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=6241628)",
-  2012, Rei-Fu Huang, Hao-Yu Yang, M. C. Chao, Shih-Chin Lin, ACM/IEEE
-  Design Automation Conference (DAC).
+  2012, Rei-Fu Huang, Hao-Yu Yang, M. C. Chao, Shih-Chin Lin.
 
   * Abstract: "This paper presents a novel memory test algorithm,
     named alternate hammering test, to detect the pairwise word-line
@@ -79,3 +88,6 @@
     alternate hammering test are validated through the test
     application to an eDRAM macro embedded in a storage-application
     SoC."
+
+  * Presented at the ACM/IEEE Design Automation Conference (DAC),
+    3rd-7th June 2012.
