@@ -76,6 +76,28 @@
 
   * Published in Computer Architecture Letters.
 
+  * This paper has been freely available online since October 2014.
+    However, I'm not sure why I didn't see the paper until after March 2015.
+    I learned about the paper at least as early as January 2015, but I
+    think it appeared to be paywalled then.
+
+    At the time of writing (19th July 2015), if I do a [Google search
+    for the paper's
+    title](https://www.google.com/search?q=%22Architectural+Support+for+Mitigating+Row+Hammering+in+DRAM+Memories%22),
+    the first two hits are
+    [paywall](http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=6840960&punumber%3D10208)
+    [pages](http://www.computer.org/csdl/letters/ca/preprint/06840960-abs.html).
+    The [third
+    hit](http://users.ece.gatech.edu/~pnair6/publications.html) is a
+    page which links to the [PDF of the
+    paper](http://users.ece.gatech.edu/~pnair6/rowhammer/rowhammer.pdf).
+    Oddly, the PDF itself does not appear directly in the search
+    results at all.  Is this a problem with Google's search indexing?
+
+    When a paper's PDF is freely available online, the PDF usually
+    shows up directly in the search results.  When it doesn't, one
+    tends to assume the PDF is not freely available.
+
   * Cites Yoongu Kim et al's paper (cited as a preprint).
 
 ## Non-open-access papers
