@@ -118,7 +118,9 @@ def main():
       results.append(cache.lookup(addr))
       if args.show_state:
         print 'state:', cache.mru_state()
-    print 'misses:', ''.join(str(int(x)) for x in results)
+    print 'misses: %s  (total: %i)' % (
+        ''.join(str(int(x)) for x in results),
+        sum(results))
 
 
 if __name__ == '__main__':
