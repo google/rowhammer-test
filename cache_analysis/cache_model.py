@@ -92,16 +92,24 @@ def main():
   test()
 
   parser = argparse.ArgumentParser()
+  parser.add_argument('--order', default='seq')
   parser.add_argument('--show-state', '-s', action='store_true')
   args = parser.parse_args()
 
   ways = 12
   cache = CacheBitPLRU(ways)
 
-  # Try a "rowhammer optimal" ordering of addresses to access.  This should
-  # generate cache misses on just two specific addresses on each iteration.
-  addr_order = ([100] + range(ways - 1) +
-                [101] + range(ways - 1))
+  if args.order == 'seq':
+    addr_order = range(ways + 1)
+  elif args.order == 'hammer':
+    # Try a "rowhammer optimal" ordering of addresses to access.  This
+    # should generate cache misses on just two specific addresses on each
+    # iteration.
+    addr_order = ([100] + range(ways - 1) +
+                  [101] + range(ways - 1))
+  else:
+    parser.error('Unknown "--order" option: %r' % args.order)
+
   print 'ordering of addresses to access:', addr_order
 
   for run in xrange(30):
