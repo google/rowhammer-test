@@ -16,26 +16,29 @@ import argparse
 import random
 
 
+def assert_eq(x, y):
+    if x != y:
+        raise AssertionError('%r != %r' % (x, y))
+
+
 # This class models a single cache set of a cache that uses "Bit-PLRU", as
 # described in https://en.wikipedia.org/wiki/Pseudo-LRU.
 class CacheBitPLRU(object):
 
-  def __init__(self, num_ways):
+  def __init__(self, num_ways, randomise=True):
     self.mru_bits = [False] * num_ways
     self.addr_to_way = {}
     self.way_to_addr = [None] * num_ways
 
-    for way in xrange(num_ways):
-      self.mru_bits[way] = bool(random.randrange(2))
+    if randomise:
+      for way in xrange(num_ways):
+        self.mru_bits[way] = bool(random.randrange(2))
 
   def _evict(self):
     for way in xrange(len(self.mru_bits)):
       if not self.mru_bits[way]:
         return way
-    # All MRU bits were set, so reset them all to zero.
-    for way in xrange(len(self.mru_bits)):
-      self.mru_bits[way] = False
-    return 0
+    raise AssertionError('Invariant broken: all MRU bits set')
 
   def lookup(self, addr):
     way = self.addr_to_way.get(addr)
@@ -53,13 +56,41 @@ class CacheBitPLRU(object):
 
     # Mark as recently used.
     self.mru_bits[way] = True
+
+    # Are all MRU bits set?  If so, reset them to zero.  This restores the
+    # invariant: We don't want all the MRU bits to be set.  Otherwise,
+    # cache hits will not be recording any useful information -- they won't
+    # be marking cache lines are more recently used than others.
+    if all(self.mru_bits):
+      for i in xrange(len(self.mru_bits)):
+        self.mru_bits[i] = False
+      # We still want the cache line that we accessed to be marked as
+      # recently used, though.
+      self.mru_bits[way] = True
+
     return is_miss
 
   def mru_state(self):
     return ''.join(str(int(x)) for x in self.mru_bits)
 
 
+def test():
+  cache = CacheBitPLRU(4, randomise=False)
+  assert_eq(cache.mru_state(), '0000')
+
+  def check(addr, is_miss, state):
+    assert_eq(cache.lookup(addr), is_miss)
+    assert_eq(cache.mru_state(), state)
+
+  check(0, True, '1000')
+  check(1, True, '1100')
+  check(2, True, '1110')
+  check(3, True, '0001')
+
+
 def main():
+  test()
+
   parser = argparse.ArgumentParser()
   parser.add_argument('--show-state', '-s', action='store_true')
   args = parser.parse_args()
