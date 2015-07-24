@@ -280,12 +280,7 @@ void access_time_graph() {
   }
 }
 
-void miss_table() {
-  int addr_count = 13;
-  AddrFinder finder;
-  uintptr_t addrs[addr_count];
-  finder.get_set(addrs, addr_count);
-
+void miss_table(uintptr_t *addrs, int addr_count) {
   Perf perf;
 
   // Test memory accesses.
@@ -321,6 +316,44 @@ void miss_table() {
   printf("\n");
 }
 
+// Displays a miss table for accessing a set of addresses sequentially.
+void miss_table_seq() {
+  int addr_count = 13;
+  AddrFinder finder;
+  uintptr_t addrs[addr_count];
+  finder.get_set(addrs, addr_count);
+  miss_table(addrs, addr_count);
+}
+
+// Displays a miss table for an attempted "rowhammer optimal" ordering
+// of addresses to access.
+void miss_table_hammer() {
+  int ways = 12;
+  int addr_count = ways * 2;
+  // Work out the address ordering before we pick specific addresses.
+  // This lets us print the ordering to make sure we got it right.
+  int indexes[addr_count];
+  for (int i = 0; i < ways; i++) {
+    indexes[i] = i;
+    indexes[i + ways] = i;
+  }
+  indexes[ways * 2 - 1] = ways;
+  printf("Ordering of addresses to access:");
+  for (int i = 0; i < addr_count; i++) {
+    printf(" %i", indexes[i]);
+  }
+  printf("\n");
+
+  AddrFinder finder;
+  uintptr_t addrs_seq[ways + 1];
+  finder.get_set(addrs_seq, ways + 1);
+  uintptr_t addrs_hammer[ways * 2];
+  for (int i = 0; i < addr_count; i++) {
+    addrs_hammer[i] = addrs_seq[indexes[i]];
+  }
+  miss_table(addrs_hammer, addr_count);
+}
+
 } // namespace
 
 int main(int argc, char **argv) {
@@ -331,11 +364,16 @@ int main(int argc, char **argv) {
 
   if (argc == 2 && strcmp(argv[1], "access_time_graph") == 0) {
     access_time_graph();
-  } else if (argc == 2 && strcmp(argv[1], "miss_table") == 0) {
+  } else if (argc == 2 && strcmp(argv[1], "miss_table_seq") == 0) {
     for (;;)
-      miss_table();
+      miss_table_seq();
+  } else if (argc == 2 && strcmp(argv[1], "miss_table_hammer") == 0) {
+    for (;;)
+      miss_table_hammer();
   } else {
-    printf("Usage: %s [access_time_graph | miss_table]\n", argv[0]);
+    printf("Usage: %s "
+           "[access_time_graph | miss_table_seq | miss_table_hammer]\n",
+           argv[0]);
     return 1;
   }
 
