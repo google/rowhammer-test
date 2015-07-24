@@ -27,6 +27,11 @@
     after only 98K accesses to a row, which is about 7.54% of the
     specification-permitted accesses of 1,300K."
 
+  * Reports percentages of failing rows and cells for DRAM they tested
+    (in Table 1).
+    * The percentage of failing cells varies from 0.0059% to 0.17%.
+    * The percentage of rows containing failures varies from 29.5% to 99.9%.
+
   * Mentions a cause being "the parasitic coupling effect".
 
   * Uses the term "active-precharge hammering on a row" (APHR) for
