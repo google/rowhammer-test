@@ -22,6 +22,8 @@
 //
 // Hammers for nsecs seconds, acquires the described fraction of memory (0.0
 // to 0.9 or so).
+//
+// Original author: Thomas Dullien (thomasdullien@google.com)
 
 #include <asm/unistd.h>
 #include <assert.h>
