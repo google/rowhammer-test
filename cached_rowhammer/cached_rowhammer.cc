@@ -13,7 +13,6 @@
 // limitations under the License.
 
 #include <assert.h>
-#include <elf.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <inttypes.h>
@@ -21,11 +20,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/mman.h>
-#include <sys/mount.h>
-#include <sys/socket.h>
-#include <sys/stat.h>
 #include <sys/time.h>
-#include <sys/wait.h>
 #include <unistd.h>
 
 #include <algorithm>
@@ -33,33 +28,13 @@
 
 const size_t memory_size = ((size_t) 900 * 4) << 20;
 
-const size_t large_page = 2 << 20;
 const size_t page_size = 0x1000;
-
-const size_t file_size = large_page * 2;
-
-const size_t data_page_marker = 0x43215678;
-
-const char target_prog_path[] = "./target_prog";
-
-// Which bit in the 64-bit PTE to flip.
-const int test_bit_to_flip = 8 + 12; // Bit 8 in the physical page number.
-
-int g_mem_fd;
-uintptr_t g_victim_phys_addr;
 
 struct HammerAddrs {
   uint64_t agg1;
   uint64_t agg2;
   uint64_t victim;
 };
-
-void mount_proc() {
-  int rc = mkdir("/proc", 0777);
-  assert(rc == 0);
-  rc = mount("", "/proc", "proc", 0, NULL);
-  assert(rc == 0);
-}
 
 // Extract the physical page number from a Linux /proc/PID/pagemap entry.
 uint64_t frame_number_from_pagemap(uint64_t value) {
@@ -375,11 +350,6 @@ public:
   void unmap_other_pages(PhysPageFinder *finder) {
     uintptr_t pages[] = { agg1, agg2, victim };
     finder->unmap_other_pages(pages, pages + 3);
-  }
-
-  void release_victim_page() {
-    int rc = munmap((void *) victim, page_size);
-    assert(rc == 0);
   }
 };
 
